@@ -1,5 +1,5 @@
 export interface tableColumn {
-    title: string;
-    key: string;
-    index?: number;
+  title: string;
+  key: string;
+  index?: number;
 }

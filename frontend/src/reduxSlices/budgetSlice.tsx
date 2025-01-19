@@ -1,12 +1,12 @@
-import { budgetI } from "@/shared/types";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { budgetI } from '@/shared/types';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface budgetState {
-    budget: budgetI | null
+    budget: budgetI | null;
 }
 const initialState: budgetState = {
-    budget: null
-}
+    budget: null,
+};
 
 const budgetSlice = createSlice({
     name: 'budget',
@@ -15,22 +15,20 @@ const budgetSlice = createSlice({
         setBudget: (state, action: PayloadAction<budgetI | null>) => {
             return {
                 ...state,
-                ...action.payload
-            }
+                budget: action.payload,
+            };
         },
         updateBudget: (state, action: PayloadAction<budgetI>) => {
             return {
                 ...state,
                 budget: {
                     ...state.budget,
-                    ...action.payload
-                }
-            }
-        }
-
-    }
-
-})
+                    ...action.payload,
+                },
+            };
+        },
+    },
+});
 
 export const { setBudget, updateBudget } = budgetSlice.actions;
 

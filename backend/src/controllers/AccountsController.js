@@ -40,21 +40,61 @@ export const Accounts = async (req, res) => {
     const { role, id: userId } = req.user;
     let accounts;
 
+    // Fetch accounts based on user role
     if (role === "superadmin") {
       accounts = await getAllAccounts();
     } else {
       accounts = await getAllAccounts({ userId });
     }
 
+    // Summarize accounts and transactions
+    const summary = accounts.map((account) => {
+      const totalIncome = account.transactions
+        .filter((t) => t.type === "income")
+        .reduce((sum, t) => sum + t.amount, 0);
+
+      const totalExpense = account.transactions
+        .filter((t) => t.type === "expense")
+        .reduce((sum, t) => sum + t.amount, 0);
+
+      const transactionStatus = account.transactions.length > 0
+        ? `Has ${account.transactions.length} transactions`
+        : "No transactions";
+
+      return {
+        accountId: account.id,
+        name: account.name,
+        accountType: account.accountType,
+        balance: account.balance,
+        totalIncome,
+        totalExpense,
+        transactionStatus,
+      };
+    });
+
+    // Calculate total income and total expense for all accounts
+    const totalIncomeAllAccounts = summary.reduce((sum, acc) => sum + acc.totalIncome, 0);
+    const totalExpenseAllAccounts = summary.reduce((sum, acc) => sum + acc.totalExpense, 0);
+
+    const totalBalance = summary.reduce((sum, acc) => sum + acc.balance, 0);
+
+    // Add summary to the original response
     res.status(200).json({
       success: true,
       message: "Accounts retrieved successfully",
       data: accounts,
+      summary: {
+        totalBalance,
+        totalIncome: totalIncomeAllAccounts,
+        totalExpense: totalExpenseAllAccounts,
+        accounts: summary,
+      },
     });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
 };
+
 
 export const getOneAccountController = async (req, res) => {
   try {

@@ -1,8 +1,4 @@
-
-
 const EmailConfirm = () => {
-    return (
-        <div>EmailConfirm</div>
-    )
-}
-export default EmailConfirm
+  return <div>EmailConfirm</div>;
+};
+export default EmailConfirm;

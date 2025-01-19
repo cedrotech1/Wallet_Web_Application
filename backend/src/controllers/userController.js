@@ -15,15 +15,40 @@ import Email from "../utils/mailer";
 import bcrypt from "bcrypt";
 import imageUploader from "../helper/imageUplouder";
 
+import {
+  createBudget
+} from "../services/BudgetService";
+
 export const create_account = async (req, res) => {
   try {
-    if (!req.body.firstname || !req.body.phone || req.body.lastname === "" || !req.body.password || req.body.password === ""
-    ) {
+    if (!req.body.firstname) {
       return res.status(400).json({
         success: false,
-        message: "Please provide all information",
+        message: "First name is required.",
       });
     }
+    
+    // if (!req.body.lastname || req.body.lastname.trim() === "") {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: "Last name is required.",
+    //   });
+    // }
+    
+    if (!req.body.phone) {
+      return res.status(400).json({
+        success: false,
+        message: "Phone number is required.",
+      });
+    }
+    
+    if (!req.body.password || req.body.password.trim() === "") {
+      return res.status(400).json({
+        success: false,
+        message: "Password is required.",
+      });
+    }
+    
 
     const userExist = await getUserByEmail(req.body.email);
     if (userExist) {
@@ -43,6 +68,8 @@ export const create_account = async (req, res) => {
     req.body.role = role;
 
     const newUser = await createUserCustomer(req.body);
+    let userId=newUser.id 
+    const newBudget = await createBudget({limit:0,currentSpending:0,userId});
     newUser.password = '(keeped it secreate)';
     await new Email(newUser).sendAccountAdded();
 

@@ -73,47 +73,49 @@ export const addTransaction = async (req, res) => {
         .json({ success: false, message: "Amount must be greater than zero." });
     }
 
+    // Convert type to lowercase
+    const transactionType = type.toLowerCase();
 
     // Validate transaction type
-    if (!["income", "expense"].includes(type.toLowerCase())) {
+    if (!["income", "expense"].includes(transactionType)) {
       return res
         .status(400)
         .json({ success: false, message: "Type must be 'income' or 'expense'." });
     }
-    let balance
 
-    if (type.toLowerCase() === "expense") {
+    let balance;
+
+    if (transactionType === "expense") {
       if (account_balance < amount) {
         return res.status(400).json({
           success: false,
           message: "Expense exceeds the available account balance.",
         });
-      }
-      else {
+      } else {
         balance = account_balance - amount;
         updatedSpending = currentSpending + amount;
         if (budget_limit < updatedSpending) {
-          message = "Transaction created successfully but you exceed bugget limit"
-          console.log("now you exceed your bugdet limit!");
-          console.log(user)
+          message = "Transaction created successfully but you exceed budget limit";
+          console.log("Now you exceed your budget limit!");
+          console.log(user);
           await new Email(user).sendNotification();
         }
       }
     } else {
       balance = account_balance + amount;
     }
+
     const transaction = await createTransaction({
       accountId,
       userId,
       subcategoryId,
-      type,
+      type: transactionType, // Save the type as lowercase
       amount,
       description,
     });
 
     const updatedAccount = await updateAccount(account_id, { balance: balance });
     const updatedBudget = await updateBudget(userId, { currentSpending: updatedSpending });
-
 
     res.status(201).json({
       success: true,
@@ -124,6 +126,7 @@ export const addTransaction = async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 };
+
 
 // Get All Transactions
 export const Transactions = async (req, res) => {
