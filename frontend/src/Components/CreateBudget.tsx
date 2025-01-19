@@ -50,7 +50,9 @@ function CreateBudget({ item, isUpdate, }: props) {
         const { limit, currentSpending, id } = res.data.data
         dispatch(updateBudget({ id, limit, currentSpending }))
         toast.success('Success budget updated !!!');
-        navigate('/');
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
       })
       .catch(() => {
         toast.error('Failed Error updating budget');
