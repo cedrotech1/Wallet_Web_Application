@@ -30,7 +30,9 @@ function CreateBudget({ item, isUpdate, }: props) {
       .post('/budgets/add', { limit: Number(data.limit) })
       .then(() => {
         toast.success('Success budget created !!!');
-        navigate('/');
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
       })
       .catch(() => {
         toast.error('Failed Error creating budget');
